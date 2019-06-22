@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
@@ -41,7 +42,155 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
         public static int[] SelectMeals(int[] protein, int[] carbs, int[] fat, string[] dietPlans)
         {
             // Add your code here.
+            int[] calories = new int[protein.Length], results = new int[dietPlans.Length], index_track;
+            string diet;
+            Boolean flag;
+            for(int i=0; i<protein.Length; i++)
+            {
+                calories[i] = (5 * protein[i]) + (5 * carbs[i]) + (9 * fat[i]);
+            }
+
+            for(int i=0; i<dietPlans.Length; i++)
+            {
+                diet = dietPlans[i];
+                flag = false;
+                index_track = new int[]{ };
+
+                if (diet.Length == 0)
+                {
+                    results[i] = 0;
+                }
+                else
+                {
+                    for (int j = 0; j < diet.Length; j++)
+                    {
+                        switch (diet[j])
+                        {
+                            case 'P':
+                                index_track = ComputeIndexes(protein, index_track, "max");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 'p':
+                                index_track = ComputeIndexes(protein, index_track, "min");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 'C':
+                                index_track = ComputeIndexes(carbs, index_track, "max");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 'c':
+                                index_track = ComputeIndexes(carbs, index_track, "min");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 'F':
+                                index_track = ComputeIndexes(fat, index_track, "max");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 'f':
+                                index_track = ComputeIndexes(fat, index_track, "min");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 'T':
+                                index_track = ComputeIndexes(calories, index_track, "max");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                            case 't':
+                                index_track = ComputeIndexes(calories, index_track, "min");
+                                if (index_track.Count() == 1)
+                                {
+                                    results[i] = index_track[0];
+                                    flag = true;
+                                }
+                                break;
+                        }
+                        if(flag==true)
+                        {
+                            break;
+                        }
+                    }
+                    if(flag == false)
+                    {
+                        results[i] = index_track.Min();
+                    }
+                }
+            }
+            return results;
             throw new NotImplementedException();
+        }
+
+        public static int[] ComputeIndexes(int[] nutrition, int[] current_index, string intake)
+        {
+            int value=0;
+            List<int> temp_index = new List<int>();
+
+            if (current_index.Count() == 0)
+            {
+                current_index = new int[nutrition.Length];
+                for(int i=0; i<nutrition.Length; i++)
+                {
+                    current_index[i] = i;
+                }
+            }
+
+            if (intake == "max")
+            {
+                value = nutrition.Min();
+                for (int i = 0; i < current_index.Length; i++)
+                {
+                    if (nutrition[current_index[i]] > value)
+                    {
+                        value = nutrition[current_index[i]];
+                    }
+                }
+            }
+            else if (intake == "min")
+            {
+                value = nutrition.Max();
+                for (int i = 0; i < current_index.Length; i++)
+                {
+                    if (nutrition[current_index[i]] < value)
+                    {
+                        value = nutrition[current_index[i]];
+                    }
+                }
+            }
+
+            for (int i=0; i<current_index.Length; i++)
+            {
+                if(nutrition[current_index[i]] == value)
+                {
+                    temp_index.Add(current_index[i]);
+                }
+            }
+            return temp_index.ToArray();
         }
     }
 }
