@@ -6,6 +6,8 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
     public static class Program
     {
+        private static int[] results;
+
         static void Main(string[] args)
         {
             Test(
@@ -41,11 +43,12 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 
         public static int[] SelectMeals(int[] protein, int[] carbs, int[] fat, string[] dietPlans)
         {
-            // Add your code here.
-            int[] calories = new int[protein.Length], results = new int[dietPlans.Length], index_track;
+            int[] calories = new int[protein.Length], indexTrack;
             string diet;
-            Boolean flag;
-            for(int i=0; i<protein.Length; i++)
+            bool flag;
+            results = new int[dietPlans.Length];
+
+            for (int i=0; i<protein.Length; i++)
             {
                 calories[i] = (5 * protein[i]) + (5 * carbs[i]) + (9 * fat[i]);
             }
@@ -54,7 +57,7 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
             {
                 diet = dietPlans[i];
                 flag = false;
-                index_track = new int[]{ };
+                indexTrack = new int[]{ };
 
                 if (diet.Length == 0)
                 {
@@ -67,70 +70,33 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
                         switch (diet[j])
                         {
                             case 'P':
-                                index_track = ComputeIndexes(protein, index_track, "max");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(protein, indexTrack, "max");
                                 break;
                             case 'p':
-                                index_track = ComputeIndexes(protein, index_track, "min");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(protein, indexTrack, "min");
                                 break;
                             case 'C':
-                                index_track = ComputeIndexes(carbs, index_track, "max");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(carbs, indexTrack, "max");
                                 break;
                             case 'c':
-                                index_track = ComputeIndexes(carbs, index_track, "min");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(carbs, indexTrack, "min");
                                 break;
                             case 'F':
-                                index_track = ComputeIndexes(fat, index_track, "max");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(fat, indexTrack, "max");
                                 break;
                             case 'f':
-                                index_track = ComputeIndexes(fat, index_track, "min");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(fat, indexTrack, "min");
                                 break;
                             case 'T':
-                                index_track = ComputeIndexes(calories, index_track, "max");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(calories, indexTrack, "max");
                                 break;
                             case 't':
-                                index_track = ComputeIndexes(calories, index_track, "min");
-                                if (index_track.Count() == 1)
-                                {
-                                    results[i] = index_track[0];
-                                    flag = true;
-                                }
+                                indexTrack = ComputeIndexes(calories, indexTrack, "min");
                                 break;
                         }
+
+                        flag = CheckIfPerfectMeal(indexTrack, i);
+
                         if(flag==true)
                         {
                             break;
@@ -138,59 +104,88 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
                     }
                     if(flag == false)
                     {
-                        results[i] = index_track.Min();
+                        results[i] = indexTrack.Min();
                     }
                 }
             }
             return results;
-            throw new NotImplementedException();
         }
 
-        public static int[] ComputeIndexes(int[] nutrition, int[] current_index, string intake)
+        private static int[] ComputeIndexes(int[] nutrition, int[] currentIndex, string intake)
         {
-            int value=0;
-            List<int> temp_index = new List<int>();
-
-            if (current_index.Count() == 0)
+            int value;
+            if (currentIndex.Count() == 0)
             {
-                current_index = new int[nutrition.Length];
+                currentIndex = new int[nutrition.Length];
                 for(int i=0; i<nutrition.Length; i++)
                 {
-                    current_index[i] = i;
+                    currentIndex[i] = i;
                 }
             }
 
             if (intake == "max")
             {
-                value = nutrition.Min();
-                for (int i = 0; i < current_index.Length; i++)
-                {
-                    if (nutrition[current_index[i]] > value)
-                    {
-                        value = nutrition[current_index[i]];
-                    }
-                }
+                value = MaxNutritionValue(nutrition, currentIndex);
             }
-            else if (intake == "min")
+            else
             {
-                value = nutrition.Max();
-                for (int i = 0; i < current_index.Length; i++)
-                {
-                    if (nutrition[current_index[i]] < value)
-                    {
-                        value = nutrition[current_index[i]];
-                    }
-                }
+                value = MinNutritionValue(nutrition, currentIndex);
             }
 
-            for (int i=0; i<current_index.Length; i++)
+            return UpdateIndexes(nutrition, currentIndex, value);
+        }
+
+        private static bool CheckIfPerfectMeal(int[] indexTrack, int dietPlanIndex)
+        {
+            if (indexTrack.Count() == 1)
             {
-                if(nutrition[current_index[i]] == value)
+                results[dietPlanIndex] = indexTrack[0];
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static int MaxNutritionValue(int[] nutrition, int[] currentIndex)
+        {
+            int value = nutrition.Min();
+            for (int i = 0; i < currentIndex.Length; i++)
+            {
+                if (nutrition[currentIndex[i]] > value)
                 {
-                    temp_index.Add(current_index[i]);
+                    value = nutrition[currentIndex[i]];
                 }
             }
-            return temp_index.ToArray();
+            return value;
+        }
+
+        private static int MinNutritionValue(int[] nutrition, int[] currentIndex)
+        {
+            int value = nutrition.Max();
+            for (int i = 0; i < currentIndex.Length; i++)
+            {
+                if (nutrition[currentIndex[i]] < value)
+                {
+                    value = nutrition[currentIndex[i]];
+                }
+            }
+            return value;
+        }
+
+        private static int[] UpdateIndexes(int[] nutrition, int[] currentIndex, int value)
+        {
+            List<int> tempIndex = new List<int>();
+
+            for (int i = 0; i < currentIndex.Length; i++)
+            {
+                if (nutrition[currentIndex[i]] == value)
+                {
+                    tempIndex.Add(currentIndex[i]);
+                }
+            }
+            return tempIndex.ToArray();
         }
     }
 }
