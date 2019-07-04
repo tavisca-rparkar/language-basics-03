@@ -7,6 +7,9 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
     public static class Program
     {
         private static int[] results;
+        private const string max = "max";
+        private const string min = "min";
+        private static Nutrition nutrition;
 
         static void Main(string[] args)
         {
@@ -33,7 +36,8 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 
         private static void Test(int[] protein, int[] carbs, int[] fat, string[] dietPlans, int[] expected)
         {
-            var result = SelectMeals(protein, carbs, fat, dietPlans).SequenceEqual(expected) ? "PASS" : "FAIL";
+            nutrition = new Nutrition(protein, carbs, fat);
+            var result = SelectMeals(dietPlans).SequenceEqual(expected) ? "PASS" : "FAIL";
             Console.WriteLine($"Proteins = [{string.Join(", ", protein)}]");
             Console.WriteLine($"Carbs = [{string.Join(", ", carbs)}]");
             Console.WriteLine($"Fats = [{string.Join(", ", fat)}]");
@@ -41,17 +45,12 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
             Console.WriteLine(result);
         }
 
-        public static int[] SelectMeals(int[] protein, int[] carbs, int[] fat, string[] dietPlans)
+        public static int[] SelectMeals(string[] dietPlans)
         {
-            int[] calories = new int[protein.Length], indexTrack;
+            int[] indexTrack;
             string diet;
             bool flag;
             results = new int[dietPlans.Length];
-
-            for (int i=0; i<protein.Length; i++)
-            {
-                calories[i] = (5 * protein[i]) + (5 * carbs[i]) + (9 * fat[i]);
-            }
 
             for(int i=0; i<dietPlans.Length; i++)
             {
@@ -70,28 +69,28 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
                         switch (diet[j])
                         {
                             case 'P':
-                                indexTrack = ComputeIndexes(protein, indexTrack, "max");
+                                indexTrack = ComputeIndexes(nutrition.protein, indexTrack, max);
                                 break;
                             case 'p':
-                                indexTrack = ComputeIndexes(protein, indexTrack, "min");
+                                indexTrack = ComputeIndexes(nutrition.protein, indexTrack, min);
                                 break;
                             case 'C':
-                                indexTrack = ComputeIndexes(carbs, indexTrack, "max");
+                                indexTrack = ComputeIndexes(nutrition.carbs, indexTrack, max);
                                 break;
                             case 'c':
-                                indexTrack = ComputeIndexes(carbs, indexTrack, "min");
+                                indexTrack = ComputeIndexes(nutrition.carbs, indexTrack, min);
                                 break;
                             case 'F':
-                                indexTrack = ComputeIndexes(fat, indexTrack, "max");
+                                indexTrack = ComputeIndexes(nutrition.fat, indexTrack, max);
                                 break;
                             case 'f':
-                                indexTrack = ComputeIndexes(fat, indexTrack, "min");
+                                indexTrack = ComputeIndexes(nutrition.fat, indexTrack, min);
                                 break;
                             case 'T':
-                                indexTrack = ComputeIndexes(calories, indexTrack, "max");
+                                indexTrack = ComputeIndexes(nutrition.calories, indexTrack, max);
                                 break;
                             case 't':
-                                indexTrack = ComputeIndexes(calories, indexTrack, "min");
+                                indexTrack = ComputeIndexes(nutrition.calories, indexTrack, min);
                                 break;
                         }
 
@@ -123,7 +122,7 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
                 }
             }
 
-            if (intake == "max")
+            if (intake == max)
             {
                 value = MaxNutritionValue(nutrition, currentIndex);
             }
