@@ -2,25 +2,31 @@
 
 namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
-    class Nutrition
+    public class Nutrition
     {
-        public int[] protein, carbs, fat, calories;
-
-        public Nutrition(int[] protein, int[] carbs, int[] fat)
+        public int Protein { get; }
+        public int Carbs { get; }
+        public int Fat { get; }
+        public int Calories
         {
-            this.protein = protein;
-            this.carbs = carbs;
-            this.fat = fat;
-            calories = new int[this.protein.Length];
-            CalculateCalories();
+            get
+            {
+                return CalculateCalories();
+            }
+        }
+        public int Index { get;  }
+
+        public Nutrition(int protein, int carbs, int fat, int index)
+        {
+            this.Protein = protein;
+            this.Carbs = carbs;
+            this.Fat = fat;
+            this.Index = index;
         }
 
-        private void CalculateCalories()
+        public int CalculateCalories()
         {
-            for (int i = 0; i < protein.Length; i++)
-            {
-                calories[i] = (5 * protein[i]) + (5 * carbs[i]) + (9 * fat[i]);
-            }
+           return (5 * this.Protein) + (5 * this.Carbs) + (9 * this.Fat);
         }
     }
 }
